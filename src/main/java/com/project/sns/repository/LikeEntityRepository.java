@@ -4,6 +4,7 @@ import com.project.sns.model.entity.LikeEntity;
 import com.project.sns.model.entity.PostEntity;
 import com.project.sns.model.entity.UserEntity;
 import io.lettuce.core.dynamic.annotation.Param;
+import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -17,7 +18,9 @@ public interface LikeEntityRepository extends JpaRepository<LikeEntity, Integer>
 
     List<LikeEntity> findAllByPost(PostEntity post);
 
-    @Query(value = "select count(*) from LikeEntity entity where entity.post =: post")
-    Integer countByPost(@Param("post") PostEntity post);
+    long countByPost(PostEntity post);
 
+    @Transactional
+    @Query("Update LikeEntity entity SET removed_at = NOW() where entity.post = :post")
+    void deleteAllByPost(@Param("post") PostEntity post);
 }

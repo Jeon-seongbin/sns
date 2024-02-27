@@ -15,7 +15,7 @@ public class Alarm {
 
     private Integer id;
     //알람을 받은 사람
-    private UserEntity user;
+//    private UserEntity user;
     private AlarmArgs args;
     private AlarmType alarmType;
     private Timestamp registeredAt;
@@ -26,7 +26,7 @@ public class Alarm {
     static public Alarm fromEntity(AlarmEntity entity) {
         return new Alarm(
                 entity.getId(),
-                entity.getUser(),
+//                entity.getUser(),
                 entity.getArgs(),
                 entity.getAlarmType(),
                 entity.getRegisteredAt(),

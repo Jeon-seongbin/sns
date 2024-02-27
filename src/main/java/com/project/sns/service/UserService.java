@@ -63,9 +63,8 @@ public class UserService {
     }
 
 
-    public Page<Alarm> alarmList(String userName, Pageable pageable) {
-        UserEntity userEntity = userRepository.findByUserName(userName).orElseThrow(() -> new SNSApplicationException(ErrorCode.USER_NOT_FOUND, String.format("%s not found", userName)));
-        return alarmEntityRepository.findAllByUser(userEntity, pageable).map(Alarm::fromEntity);
+    public Page<Alarm> alarmList(Integer userId, Pageable pageable) {
+        return alarmEntityRepository.findAllByUserId(userId, pageable).map(Alarm::fromEntity);
     }
 
 }

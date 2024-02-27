@@ -55,6 +55,8 @@ public class PostService {
         }
 
         postEntityRepository.delete(postEntity);
+        likeEntityRepository.deleteAllByPost(postEntity);
+        commentEntityRepository.deleteAllByPost(postEntity);
     }
 
     public Page<Post> list(Pageable pageable) {
@@ -79,7 +81,7 @@ public class PostService {
         alarmEntityRepository.save(AlarmEntity.of(postEntity.getUser(), AlarmType.NEW_LIKE_ON_POST, new AlarmArgs(userEntity.getId(), postEntity.getId())));
     }
 
-    public Integer likeCount(Integer postId) {
+    public long likeCount(Integer postId) {
         PostEntity postEntity = getPostEntityOrException(postId);
         return likeEntityRepository.countByPost(postEntity);
     }
