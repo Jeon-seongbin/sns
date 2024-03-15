@@ -31,28 +31,34 @@ public class JwtTokenFilter extends OncePerRequestFilter {
     private final RequestMatcher ignoredPathsJoin = new AntPathRequestMatcher("/api/*/users/join");
     private final RequestMatcher ignoredPathsLogin = new AntPathRequestMatcher("/api/*/users/login");
 
+    private final static List<String> TOKEN_IN_PARAM_URLS = List.of("/api/v1/users/alarm/subscribe");
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        if (this.ignoredPathsJoin.matches(request)) {
-            filterChain.doFilter(request, response);
-            return;
-        }
-
-        if (this.ignoredPathsLogin.matches(request)) {
-            filterChain.doFilter(request, response);
-            return;
-        }
-
-        final String header = request.getHeader(HttpHeaders.AUTHORIZATION);
-        if (header == null || !header.startsWith("Bearer ")) {
-            logger.error("Error occurs while getting header. header is null or invalid");
-            filterChain.doFilter(request, response);
-            return;
-        }
-
+        final String token;
         try {
-            final String token = header.split(" ")[1].trim();
+
+            if (TOKEN_IN_PARAM_URLS.contains(request.getRequestURI())) {
+                token = request.getQueryString().split("=")[1].trim();
+            } else {
+                if (this.ignoredPathsJoin.matches(request)) {
+                    filterChain.doFilter(request, response);
+                    return;
+                }
+
+                if (this.ignoredPathsLogin.matches(request)) {
+                    filterChain.doFilter(request, response);
+                    return;
+                }
+
+                final String header = request.getHeader(HttpHeaders.AUTHORIZATION);
+                if (header == null || !header.startsWith("Bearer ")) {
+                    logger.error("Error occurs while getting header. header is null or invalid");
+                    filterChain.doFilter(request, response);
+                    return;
+                }
+                token = header.split(" ")[1].trim();
+            }
 
             if (JwtTokenUtils.isExpired(token, key)) {
                 logger.error("key is expired");
@@ -65,7 +71,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             User user = userService.loadUserByUsername(username);
 
             UsernamePasswordAuthenticationToken autentication =
-                    new UsernamePasswordAuthenticationToken(user, null,user.getAuthorities());
+                    new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
 
             autentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 

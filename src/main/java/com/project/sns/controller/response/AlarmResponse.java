@@ -3,6 +3,7 @@ package com.project.sns.controller.response;
 import com.project.sns.model.Alarm;
 import com.project.sns.model.AlarmArgs;
 import com.project.sns.model.AlarmType;
+import com.project.sns.model.User;
 import com.project.sns.model.entity.AlarmEntity;
 import com.project.sns.model.entity.UserEntity;
 import com.project.sns.repository.AlarmEntityRepository;
@@ -17,7 +18,7 @@ public class AlarmResponse {
 
     private Integer id;
     //알람을 받은 사람
-    private UserEntity user;
+//    private User user;
     private AlarmArgs args;
     private AlarmType alarmType;
     private Timestamp registeredAt;
@@ -28,7 +29,7 @@ public class AlarmResponse {
     static public AlarmResponse fromAlarm(Alarm alarm) {
         return new AlarmResponse(
                 alarm.getId(),
-                alarm.getUser(),
+//                alarm.getUser(),
                 alarm.getArgs(),
                 alarm.getAlarmType(),
                 alarm.getRegisteredAt(),

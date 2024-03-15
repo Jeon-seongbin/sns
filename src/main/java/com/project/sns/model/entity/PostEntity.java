@@ -1,6 +1,5 @@
 package com.project.sns.model.entity;
 
-import com.project.sns.model.UserRole;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

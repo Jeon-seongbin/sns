@@ -27,14 +27,16 @@ public class AutenticationConfig {
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
         return (web) -> web.ignoring().requestMatchers(
-                new RegexRequestMatcher("^(?!/api).*","POST"),
-                new RegexRequestMatcher("^(?!/api).*","GET"));
+                new RegexRequestMatcher("^(?!/api).*", "POST"),
+                new RegexRequestMatcher("^(?!/api).*", "GET"),
+                new RegexRequestMatcher("^/api/*/users/join", "GET"),
+                new RegexRequestMatcher("^/api/*/users/join", "POST"),
+                new RegexRequestMatcher("^/api/*/users/login", "GET"),
+                new RegexRequestMatcher("^/api/*/users/login", "POST"));
     }
-
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-
 
 
         http
@@ -43,12 +45,11 @@ public class AutenticationConfig {
                         .requestMatchers("/api/**").authenticated()
                         .anyRequest().authenticated()
                 ).addFilterBefore(new JwtTokenFilter(key, userService), UsernamePasswordAuthenticationFilter.class)
-                ;
+        ;
 
         http.sessionManagement(httpSecuritySessionManagementConfigurer ->
                 httpSecuritySessionManagementConfigurer.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED));
         http.csrf((csrf) -> csrf.disable());
-
 
 
         http.exceptionHandling().authenticationEntryPoint(new CustomAutenticationEntryPoint());

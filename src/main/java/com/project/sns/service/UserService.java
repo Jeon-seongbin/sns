@@ -7,6 +7,7 @@ import com.project.sns.model.Alarm;
 import com.project.sns.model.User;
 import com.project.sns.model.entity.UserEntity;
 import com.project.sns.repository.AlarmEntityRepository;
+import com.project.sns.repository.UserCacheRepository;
 import com.project.sns.repository.UserEntityRepository;
 import com.project.sns.util.JwtTokenUtils;
 import jakarta.transaction.Transactional;
@@ -25,6 +26,7 @@ public class UserService {
 
     private final UserEntityRepository userRepository;
     private final AlarmEntityRepository alarmEntityRepository;
+    private final UserCacheRepository userCacheRepository;
 
     private final BCryptPasswordEncoder encoder;
 
@@ -35,9 +37,11 @@ public class UserService {
     private Long expiredTomeMs;
 
     public User loadUserByUsername(String userName) {
-        return userRepository.findByUserName(userName).map(User::fromEntity).orElseThrow(() ->
-                new SNSApplicationException(ErrorCode.USER_NOT_FOUND, String.format("%s not found", userName))
-        );
+        return userCacheRepository.getUser(userName).orElseGet(() ->
+                userRepository.findByUserName(userName).map(User::fromEntity).orElseThrow(() ->
+                        new SNSApplicationException(ErrorCode.USER_NOT_FOUND, String.format("%s not found", userName))
+                ));
+
     }
 
     @Transactional
@@ -52,19 +56,15 @@ public class UserService {
     }
 
     public String login(String username, String password) {
-
-        UserEntity userEntity = userRepository.findByUserName(username).orElseThrow(() -> new SNSApplicationException(ErrorCode.USER_NOT_FOUND, String.format("%s not found", username)));
-
-        if (!encoder.matches(password, userEntity.getPassword())) {
+        User user = loadUserByUsername(username);
+        if (!encoder.matches(password, user.getPassword())) {
             throw new SNSApplicationException(ErrorCode.INVALID_PASSWORD);
         }
-
+        userCacheRepository.setUser(user);
         return JwtTokenUtils.generateToken(username, secretKey, expiredTomeMs);
     }
-
 
     public Page<Alarm> alarmList(Integer userId, Pageable pageable) {
         return alarmEntityRepository.findAllByUserId(userId, pageable).map(Alarm::fromEntity);
     }
-
 }
