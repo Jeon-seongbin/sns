@@ -1,13 +1,13 @@
 package com.example.sns.service;
 
-import com.example.sns.controller.model.User;
+import com.example.sns.exception.ErrorCode;
+import com.example.sns.model.User;
 import com.example.sns.exception.SnSApplicationException;
 import com.example.sns.model.entity.UserEntity;
 import com.example.sns.repository.UserEntityRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -16,17 +16,19 @@ public class UserService {
     private final UserEntityRepository userEntityRepository;
 
     public User join(String username, String password){
-        Optional<UserEntity> userEntity = userEntityRepository.findByUsername(username);
-        userEntityRepository.save(new UserEntity());
-        return new User();
+       userEntityRepository.findByUserName(username).ifPresent( it -> {
+            throw new SnSApplicationException(ErrorCode.DUPLICATED_USER_NAME,String.format("%s is duplicated", username));
+        });
+        UserEntity user = userEntityRepository.save(UserEntity.of(username, password));
+        return User.fromEntity(user);
     }
 
     public String login(String username, String password){
-        UserEntity userEntity = userEntityRepository.findByUsername(username).orElseThrow(() -> new SnSApplicationException());
+        UserEntity userEntity = userEntityRepository.findByUserName(username).orElseThrow(() -> new SnSApplicationException(ErrorCode.DUPLICATED_USER_NAME, ""));
 
         if (!userEntity.getPassword().equals(password)) {
 
-            throw new SnSApplicationException();
+            throw new SnSApplicationException(ErrorCode.DUPLICATED_USER_NAME, "");
         }
 
         return "";

@@ -32,7 +32,7 @@ public class UserServiceTest {
         String username = "userName";
         String password = "password";
 
-        when(userEntityRepository.findByUsername(username)).thenReturn(Optional.empty());
+        when(userEntityRepository.findByUserName(username)).thenReturn(Optional.empty());
         UserEntity fixture = UserEntityFixture.get(username, password);
 
         when(userEntityRepository.save(any())).thenReturn(Optional.of(fixture));
@@ -47,7 +47,7 @@ public class UserServiceTest {
 
         UserEntity fixture = UserEntityFixture.get(username, password);
 
-        when(userEntityRepository.findByUsername(username)).thenReturn(Optional.of(fixture));
+        when(userEntityRepository.findByUserName(username)).thenReturn(Optional.of(fixture));
 
         when(userEntityRepository.save(any())).thenReturn(Optional.of(fixture));
         SnSApplicationException e = Assertions.assertThrows(SnSApplicationException.class, () -> userService.join(username, password));
@@ -61,7 +61,7 @@ public class UserServiceTest {
 
         UserEntity fixture = UserEntityFixture.get(username, password);
 
-        when(userEntityRepository.findByUsername(username)).thenReturn(Optional.of(fixture));
+        when(userEntityRepository.findByUserName(username)).thenReturn(Optional.of(fixture));
 
         Assertions.assertDoesNotThrow(() -> userService.login(username, password));
     }
@@ -70,7 +70,7 @@ public class UserServiceTest {
     void login_noUser(){
         String username = "userName";
         String password = "password";
-        when(userEntityRepository.findByUsername(username)).thenReturn((Optional.empty()));
+        when(userEntityRepository.findByUserName(username)).thenReturn((Optional.empty()));
 
         SnSApplicationException e = Assertions.assertThrows(SnSApplicationException.class, () -> userService.login(username, password));
     }
@@ -82,7 +82,7 @@ public class UserServiceTest {
         String wrongPassword = "wrongPassword";
         UserEntity fixture = UserEntityFixture.get(username, password);
 
-        when(userEntityRepository.findByUsername(username)).thenReturn((Optional.of(fixture)));
+        when(userEntityRepository.findByUserName(username)).thenReturn((Optional.of(fixture)));
 
         SnSApplicationException e = Assertions.assertThrows(SnSApplicationException.class, () -> userService.login(username, wrongPassword));
     }

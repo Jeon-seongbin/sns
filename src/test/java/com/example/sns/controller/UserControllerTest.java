@@ -1,9 +1,11 @@
 package com.example.sns.controller;
 
-import com.example.sns.controller.model.User;
+
 import com.example.sns.controller.request.UserJoinRequest;
 import com.example.sns.controller.request.UserLoginRequest;
+import com.example.sns.exception.ErrorCode;
 import com.example.sns.exception.SnSApplicationException;
+import com.example.sns.model.User;
 import com.example.sns.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
@@ -54,7 +56,7 @@ public class UserControllerTest {
         String userName = "userName";
         String password = "password";
 
-        when(userService.join(userName, password)).thenThrow(new SnSApplicationException());
+        when(userService.join(userName, password)).thenThrow(new SnSApplicationException(ErrorCode.DUPLICATED_USER_NAME, ""));
 
 
         mockMvc.perform(post("api/v1/users/join")
@@ -83,7 +85,8 @@ public class UserControllerTest {
         String userName = "userName";
         String password = "password";
 
-        when(userService.login(userName, password)).thenThrow(new SnSApplicationException());
+        when(userService.login(userName, password)).thenThrow(new SnSApplicationException(ErrorCode.DUPLICATED_USER_NAME, ""));
+
 
 
         mockMvc.perform(post("api/v1/users/login")
@@ -98,7 +101,7 @@ public class UserControllerTest {
         String userName = "userName";
         String password = "password";
 
-        when(userService.login(userName, password)).thenThrow(new SnSApplicationException());
+        when(userService.login(userName, password)).thenThrow(new SnSApplicationException(ErrorCode.DUPLICATED_USER_NAME, ""));
 
 
         mockMvc.perform(post("api/v1/users/login")
