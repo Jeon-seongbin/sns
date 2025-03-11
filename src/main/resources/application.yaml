@@ -12,3 +12,7 @@ spring.datasource:
     hibernate.ddl-auto: update
     properties.hibernate.format_sql: true
     show-sql: true
+
+  jwt:
+    secret-key: key
+    token.expired-time-ms: 2582999
