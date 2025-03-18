@@ -1,7 +1,7 @@
 package com.example.sns.controller;
 
 import com.example.sns.controller.request.PostCreateRequest;
-import com.example.sns.controller.request.UserLoginRequest;
+import com.example.sns.service.PostService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -21,6 +22,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class PostControllerTest {
     @Autowired
     private MockMvc mockMvc;
+
+    @MockitoBean
+    private PostService postService;
+
 
     @Autowired
     ObjectMapper objectMapper;
@@ -50,6 +55,5 @@ public class PostControllerTest {
                         .content(objectMapper.writeValueAsBytes(new PostCreateRequest(title, body))))
                 .andDo(print())
                 .andExpect(status().isUnauthorized());
-
     }
 }

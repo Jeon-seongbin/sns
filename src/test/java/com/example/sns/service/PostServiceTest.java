@@ -6,7 +6,6 @@ import com.example.sns.model.entity.PostEntity;
 import com.example.sns.model.entity.UserEntity;
 import com.example.sns.repository.PostEntityRepository;
 import com.example.sns.repository.UserEntityRepository;
-import org.hibernate.dialect.function.array.PostgreSQLArrayTrimEmulation;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,7 +52,7 @@ public class PostServiceTest {
         when(userEntityRepository.findByUserName(userName)).thenReturn(Optional.empty());
         when(postEntityRepository.save(any())).thenReturn(mock(PostEntity.class));
 
-        SnSApplicationException e = Assertions.assertThrows( SnSApplicationException.class, () -> postService.create(title, body, userName));
+        SnSApplicationException e = Assertions.assertThrows(SnSApplicationException.class, () -> postService.create(title, body, userName));
 
         Assertions.assertEquals(ErrorCode.USER_NOT_FOUND, e.getErrorCode());
     }

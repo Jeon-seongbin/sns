@@ -18,6 +18,8 @@ import java.time.Instant;
 @Where(clause =  "deleted_at is NULL")
 public class UserEntity {
     @Id
+    @Column(name="id")
+    @GeneratedValue(strategy=GenerationType.SEQUENCE)
     private Integer id;
 
     @Column(name = "user_name")

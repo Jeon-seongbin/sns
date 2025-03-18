@@ -27,25 +27,31 @@ public class UserService {
     private Long expiredTimeMs;
 
 
+    public User loadUserByUserName(String userName) {
+        return
+                userEntityRepository.findByUserName(userName).map(User::fromEntity).orElseThrow(
+                        () -> new SnSApplicationException(ErrorCode.USER_NOT_FOUND, String.format("userName is %s", userName))
+                );
+    }
 
 
     @Transactional
-    public User join(String username, String password){
-       userEntityRepository.findByUserName(username).ifPresent( it -> {
-            throw new SnSApplicationException(ErrorCode.DUPLICATED_USER_NAME,String.format("%s is duplicated", username));
+    public User join(String username, String password) {
+        userEntityRepository.findByUserName(username).ifPresent(it -> {
+            throw new SnSApplicationException(ErrorCode.DUPLICATED_USER_NAME, String.format("%s is duplicated", username));
         });
         UserEntity user = userEntityRepository.save(UserEntity.of(username, encoder.encode(password)));
         return User.fromEntity(user);
     }
 
-    public String login(String username, String password){
+    public String login(String username, String password) {
         UserEntity userEntity = userEntityRepository.findByUserName(username).orElseThrow(() -> new SnSApplicationException(ErrorCode.USER_NOT_FOUND, String.format("%s not founded username", username)));
 
         if (!encoder.matches(password, userEntity.getPassword())) {
             throw new SnSApplicationException(ErrorCode.INVALID_PASSWORD);
         }
 
-       return JwtTokenUtils.generateToken(username,secretKey, expiredTimeMs);
+        return JwtTokenUtils.generateToken(username, secretKey, expiredTimeMs);
 
     }
 }

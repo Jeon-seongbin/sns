@@ -6,13 +6,14 @@ spring.datasource:
   platform: postgres
   driver-class-name: org.postgresql.Driver
 
-  spring.jpa:
-    database: postgresql
-    hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect
-    hibernate.ddl-auto: update
-    properties.hibernate.format_sql: true
-    show-sql: true
+spring.jpa:
+  database: postgresql
+  hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect
+  hibernate.ddl-auto: update
+  properties.hibernate.format_sql: true
+  show-sql: true
 
-  jwt:
-    secret-key: key
-    token.expired-time-ms: 2582999
+jwt:
+  secret-key: "test-secret-test-secret-test-secret-test-secret-test-secret-test-secret-test-secret-test-secret-test-secret-test-secret-test-secret"
+  token.expired-time-ms: 2582999
+

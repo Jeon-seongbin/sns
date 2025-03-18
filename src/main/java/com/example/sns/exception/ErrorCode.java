@@ -13,6 +13,8 @@ public enum ErrorCode {
     INVALID_PASSWORD(HttpStatus.UNAUTHORIZED,"Password is invalid"),
 
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR,"INTERNAL_SERVER_ERROR"),
+
+    INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "token was not invalid")
     ;
 
     private HttpStatus status;
