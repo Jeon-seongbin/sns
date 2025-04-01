@@ -14,8 +14,12 @@ public enum ErrorCode {
 
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR,"INTERNAL_SERVER_ERROR"),
 
-    INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "token was not invalid")
-    ;
+    INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "token was not invalid"),
+
+    POST_NOT_FOUND(HttpStatus.NOT_FOUND, "post not found"),
+    INVALID_PERMISSION(HttpStatus.UNAUTHORIZED, "Permission is invalid"),
+;
+
 
     private HttpStatus status;
     private String message;

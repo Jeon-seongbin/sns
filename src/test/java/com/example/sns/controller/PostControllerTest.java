@@ -1,6 +1,9 @@
 package com.example.sns.controller;
 
 import com.example.sns.controller.request.PostCreateRequest;
+import com.example.sns.controller.request.PostModifyRequest;
+import com.example.sns.exception.ErrorCode;
+import com.example.sns.exception.SnSApplicationException;
 import com.example.sns.service.PostService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
@@ -13,7 +16,10 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doThrow;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -36,7 +42,7 @@ public class PostControllerTest {
         String title = "title";
         String body = "body";
 
-        mockMvc.perform(post("api/v1/post")
+        mockMvc.perform(post("api/v1/posts")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsBytes(new PostCreateRequest(title, body))))
                 .andDo(print())
@@ -50,10 +56,114 @@ public class PostControllerTest {
         String title = "title";
         String body = "body";
 
-        mockMvc.perform(post("api/v1/post")
+        mockMvc.perform(post("api/v1/posts")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsBytes(new PostCreateRequest(title, body))))
                 .andDo(print())
                 .andExpect(status().isUnauthorized());
     }
+
+    @Test
+    @WithMockUser
+    void modifyPost() throws Exception {
+        String title = "title";
+        String body = "body";
+
+        mockMvc.perform(put("api/v1/posts/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsBytes(new PostModifyRequest(title, body))))
+                .andDo(print())
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @WithAnonymousUser
+    void modifyPostNotLogin() throws Exception {
+        String title = "title";
+        String body = "body";
+
+        mockMvc.perform(put("api/v1/posts/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsBytes(new PostModifyRequest(title, body))))
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @WithMockUser
+    void modifyPostNotMine() throws Exception {
+        String title = "title";
+        String body = "body";
+
+        doThrow(new SnSApplicationException(ErrorCode.INVALID_PERMISSION)).when(postService).modify(eq(title), eq(body), any(), eq(1));
+
+        mockMvc.perform(put("api/v1/posts/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsBytes(new PostModifyRequest(title, body))))
+                .andDo(print())
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @WithMockUser
+    void modifyPostNotPostId() throws Exception {
+        String title = "title";
+        String body = "body";
+
+
+        doThrow(new SnSApplicationException(ErrorCode.POST_NOT_FOUND)).when(postService).modify(eq(title), eq(body), any(), eq(1));
+
+        mockMvc.perform(put("api/v1/posts/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsBytes(new PostModifyRequest(title, body))))
+                .andDo(print())
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @WithMockUser
+    void deletePost() throws Exception {
+        mockMvc.perform(delete("api/v1/posts/1")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @WithAnonymousUser
+    void deletePost_NotLogin() throws Exception {
+        mockMvc.perform(delete("api/v1/posts/1")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @WithMockUser
+    void deletePost_AnotherUser() throws Exception {
+        doThrow(new SnSApplicationException(ErrorCode.INVALID_PERMISSION)).when(postService.delete(any(),any()));
+
+
+        mockMvc.perform(delete("api/v1/posts/1")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @WithMockUser
+    void deletePost_NoPost() throws Exception {
+
+//        when(postService.delete(any(),any()))
+
+
+        doThrow(new SnSApplicationException(ErrorCode.POST_NOT_FOUND)).when(postService.delete(any(),any()));
+
+        mockMvc.perform(delete("api/v1/posts/1")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk());
+    }
+
+
 }

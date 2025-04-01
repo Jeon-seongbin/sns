@@ -2,6 +2,7 @@ package com.example.sns.service;
 
 import com.example.sns.exception.ErrorCode;
 import com.example.sns.exception.SnSApplicationException;
+import com.example.sns.fixture.PostEntityFixture;
 import com.example.sns.model.entity.PostEntity;
 import com.example.sns.model.entity.UserEntity;
 import com.example.sns.repository.PostEntityRepository;
@@ -56,4 +57,23 @@ public class PostServiceTest {
 
         Assertions.assertEquals(ErrorCode.USER_NOT_FOUND, e.getErrorCode());
     }
+
+    @Test
+    void createPost_postNotFound() {
+        String title = "title";
+        String body = "body";
+        String userName = "userName";
+        Integer postId = 1;
+
+        PostEntity p = PostEntityFixture.get(userName, postId, 1);
+        UserEntity u = p.getUser();
+
+        when(userEntityRepository.findByUserName(userName)).thenReturn(Optional.of(u));
+        when(postEntityRepository.findById(postId)).thenReturn(Optional.empty());
+
+        SnSApplicationException e = Assertions.assertThrows(SnSApplicationException.class, () -> postService.modify(title, body, userName, postId));
+
+        Assertions.assertEquals(ErrorCode.POST_NOT_FOUND, e.getErrorCode());
+    }
+
 }
