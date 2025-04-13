@@ -1,6 +1,6 @@
 package com.example.sns.controller.response;
 
-import com.example.sns.model.entity.UserEntity;
+import com.example.sns.model.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -10,10 +10,10 @@ public class UserJoinResponse {
     private Integer id;
     private String name;
 
-    public static UserJoinResponse fromUser(UserEntity user) {
+    public static UserJoinResponse fromUser(User user) {
         return new UserJoinResponse(
                 user.getId(),
-                user.getUserName()
+                user.getUsername()
         );
     }
 }

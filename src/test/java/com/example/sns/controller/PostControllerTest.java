@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -19,6 +20,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -141,9 +143,7 @@ public class PostControllerTest {
     @Test
     @WithMockUser
     void deletePost_AnotherUser() throws Exception {
-        doThrow(new SnSApplicationException(ErrorCode.INVALID_PERMISSION)).when(postService.delete(any(),any()));
-
-
+        doThrow(new SnSApplicationException(ErrorCode.INVALID_PERMISSION)).when(postService).delete(any(), any());
         mockMvc.perform(delete("api/v1/posts/1")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
@@ -153,17 +153,51 @@ public class PostControllerTest {
     @Test
     @WithMockUser
     void deletePost_NoPost() throws Exception {
-
-//        when(postService.delete(any(),any()))
-
-
-        doThrow(new SnSApplicationException(ErrorCode.POST_NOT_FOUND)).when(postService.delete(any(),any()));
-
+        doThrow(new SnSApplicationException(ErrorCode.POST_NOT_FOUND)).when(postService).delete(any(), any());
         mockMvc.perform(delete("api/v1/posts/1")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk());
     }
 
+    @Test
+    @WithMockUser
+    void feedList() throws Exception {
+        when(postService.list(any())).thenReturn(Page.empty());
+        mockMvc.perform(get("api/v1/posts")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk());
+    }
 
+    @Test
+    @WithMockUser
+    void feedListNotLogin() throws Exception {
+        when(postService.list(any())).thenReturn(Page.empty());
+        mockMvc.perform(post("api/v1/posts")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk());
+    }
+
+
+    @Test
+    @WithMockUser
+    void myFeedList() throws Exception {
+        when(postService.my(any(), any())).thenReturn(Page.empty());
+        mockMvc.perform(post("api/v1/posts/my")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @WithMockUser
+    void myFeedList_NotLogin() throws Exception {
+        when(postService.my(any(), any())).thenReturn(Page.empty());
+        mockMvc.perform(post("api/v1/posts/my")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk());
+    }
 }

@@ -11,6 +11,8 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.util.Optional;
@@ -76,4 +78,19 @@ public class PostServiceTest {
         Assertions.assertEquals(ErrorCode.POST_NOT_FOUND, e.getErrorCode());
     }
 
+    @Test
+    void feed_success() {
+        Pageable pageable = mock(Pageable.class);
+        when(postEntityRepository.findAll(pageable)).thenReturn(Page.empty());
+        Assertions.assertDoesNotThrow(() -> postService.list(pageable));
+    }
+
+    @Test
+    void my_success() {
+        Pageable pageable = mock(Pageable.class);
+        UserEntity user = mock(UserEntity.class);
+        when(userEntityRepository.findByUserName(any())).thenReturn(Optional.of(user));
+        when(postEntityRepository.findAllByUser(any(), pageable)).thenReturn(Page.empty());
+        Assertions.assertDoesNotThrow(() -> postService.my("", pageable));
+    }
 }
