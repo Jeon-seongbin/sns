@@ -3,15 +3,21 @@ package com.example.sns.service;
 import com.example.sns.exception.ErrorCode;
 import com.example.sns.exception.SnSApplicationException;
 import com.example.sns.model.Post;
+import com.example.sns.model.entity.LikeEntity;
 import com.example.sns.model.entity.PostEntity;
 import com.example.sns.model.entity.UserEntity;
+import com.example.sns.repository.LikeEntityRepository;
 import com.example.sns.repository.PostEntityRepository;
 import com.example.sns.repository.UserEntityRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
+
+import javax.sound.sampled.LineEvent;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -20,6 +26,8 @@ public class PostService {
     private final PostEntityRepository postEntityRepository;
 
     private final UserEntityRepository userEntityRepository;
+
+    private final LikeEntityRepository likeEntityRepository;
 
     @Transactional
     public void create(String title, String body, String userName) {
@@ -64,5 +72,25 @@ public class PostService {
     public Page<Post> my(String userName, Pageable pageable) {
         UserEntity user = userEntityRepository.findByUserName(userName).orElseThrow(() -> new SnSApplicationException(ErrorCode.USER_NOT_FOUND, String.format("%s not founded", userName)));
         return postEntityRepository.findAllByUser(user, pageable).map(Post::fromEntity);
+    }
+
+    @Transactional
+    public void like(Integer postId, String userName) {
+        PostEntity p = postEntityRepository.findById(postId).orElseThrow(() -> new SnSApplicationException(ErrorCode.POST_NOT_FOUND, String.format("post %s was not found", postId)));
+        UserEntity user = userEntityRepository.findByUserName(userName).orElseThrow(() -> new SnSApplicationException(ErrorCode.USER_NOT_FOUND, String.format("%s not founded", userName)));
+        if (p.getUser() != user) {
+            throw new SnSApplicationException(ErrorCode.INVALID_PERMISSION, String.format("user %s different", user.getId()));
+        }
+
+        likeEntityRepository.findByUserAndPost(user, p).ifPresent(it -> {
+            throw new SnSApplicationException(ErrorCode.ALREADY_LIKED, String.format("username %s already liked post %d", userName, postId));
+        });
+
+        likeEntityRepository.save(LikeEntity.of(user, p));
+    }
+
+    public int likeCount(Integer postId) {
+        PostEntity p = postEntityRepository.findById(postId).orElseThrow(() -> new SnSApplicationException(ErrorCode.POST_NOT_FOUND, String.format("post %s was not found", postId)));
+        return likeEntityRepository.countByPost(p);
     }
 }

@@ -45,7 +45,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         }
 
         if (header == null || !header.startsWith("Bearer ")) {
-            log.error("Error occurs while getting header.");
+            log.error("Error occurs while getting header. {}", request.getRequestURL());
             filterChain.doFilter(request, response);
             return;
         }

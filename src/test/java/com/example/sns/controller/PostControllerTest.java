@@ -200,4 +200,36 @@ public class PostControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk());
     }
+
+
+    @Test
+    @WithMockUser
+    void like() throws Exception {
+        when(postService.my(any(), any())).thenReturn(Page.empty());
+        mockMvc.perform(post("api/v1/posts/1/likes")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @WithAnonymousUser
+    void like_NotLogin() throws Exception {
+        when(postService.my(any(), any())).thenReturn(Page.empty());
+        mockMvc.perform(post("api/v1/posts/1/likes")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @WithAnonymousUser
+    void like_NoPost() throws Exception {
+        doThrow(new SnSApplicationException(ErrorCode.POST_NOT_FOUND)).when(postService).like(any(), any());
+        when(postService.my(any(), any())).thenReturn(Page.empty());
+        mockMvc.perform(post("api/v1/posts/1/likes")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk());
+    }
 }
