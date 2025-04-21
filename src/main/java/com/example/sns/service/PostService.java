@@ -93,4 +93,9 @@ public class PostService {
         PostEntity p = postEntityRepository.findById(postId).orElseThrow(() -> new SnSApplicationException(ErrorCode.POST_NOT_FOUND, String.format("post %s was not found", postId)));
         return likeEntityRepository.countByPost(p);
     }
+
+    @Transactional
+    public void comment(Integer postId, String UserName) {
+
+    }
 }
