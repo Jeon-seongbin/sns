@@ -29,7 +29,7 @@ public class UserServiceTest {
     private BCryptPasswordEncoder encoder;
 
     @Test
-    void adduser(){
+    void adduser() {
         String username = "userName";
         String password = "password";
 
@@ -42,7 +42,7 @@ public class UserServiceTest {
     }
 
     @Test
-    void adduser_existUser(){
+    void adduser_existUser() {
         String username = "userName";
         String password = "password";
 
@@ -56,7 +56,7 @@ public class UserServiceTest {
 
 
     @Test
-    void login_user(){
+    void login_user() {
         String username = "userName";
         String password = "password";
 
@@ -69,7 +69,7 @@ public class UserServiceTest {
     }
 
     @Test
-    void login_noUser(){
+    void login_noUser() {
         String username = "userName";
         String password = "password";
         when(encoder.encode(password)).thenReturn("encrypt_password");
@@ -79,7 +79,7 @@ public class UserServiceTest {
     }
 
     @Test
-    void login_wrong_password(){
+    void login_wrong_password() {
         String username = "userName";
         String password = "password";
         String wrongPassword = "wrongPassword";
