@@ -260,7 +260,7 @@ public class PostControllerTest {
     @Test
     @WithMockUser
     void comment_NoPost() throws Exception {
-        doThrow(new SnSApplicationException(ErrorCode.POST_NOT_FOUND)).when(postService).comment(any(), any());
+        doThrow(new SnSApplicationException(ErrorCode.POST_NOT_FOUND)).when(postService).comment(any(), any(), any());
         mockMvc.perform(post("api/v1/posts/1/comments")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsBytes(new PostCommentRequest("comment"))))
