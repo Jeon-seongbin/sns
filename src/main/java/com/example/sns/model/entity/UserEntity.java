@@ -14,12 +14,12 @@ import java.time.Instant;
 @Getter
 @Entity
 @Table(name = "\"user\"")
-@SQLDelete( sql = "UPDATE \"user\" SET deleted_at = NOW() where id = ?")
-@Where(clause =  "deleted_at is NULL")
+@SQLDelete(sql = "UPDATE \"user\" SET deleted_at = NOW() where id = ?")
+@Where(clause = "deleted_at is NULL")
 public class UserEntity {
     @Id
-    @Column(name="id")
-    @GeneratedValue(strategy=GenerationType.SEQUENCE)
+    @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Integer id;
 
     @Column(name = "user_name")
@@ -28,7 +28,7 @@ public class UserEntity {
     @Column(name = "password")
     private String password;
 
-    @Column(name ="role")
+    @Column(name = "role")
     private UserRole role = UserRole.USER;
 
     @Column(name = "register_at")
@@ -41,16 +41,16 @@ public class UserEntity {
     private Timestamp deleted_at;
 
     @PrePersist
-    void registerAt(){
+    void registerAt() {
         this.registerAt = Timestamp.from(Instant.now());
     }
 
     @PreUpdate
-    void updatedAt(){
+    void updatedAt() {
         this.updatedAt = Timestamp.from(Instant.now());
     }
 
-    public static UserEntity of(String userName, String password){
+    public static UserEntity of(String userName, String password) {
         UserEntity userEntity = new UserEntity();
         userEntity.setUserName(userName);
         userEntity.setPassword(password);

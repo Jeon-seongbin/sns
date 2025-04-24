@@ -11,8 +11,8 @@ import java.sql.Timestamp;
 @Setter
 @Getter
 @Entity
-@Table(name = "\"post\"")
-@SQLDelete(sql = "UPDATE \"post\" SET deleted_at = NOW() where id = ?")
+@Table(name = "\"like\"")
+@SQLDelete(sql = "UPDATE \"like\" SET deleted_at = NOW() where id = ?")
 @Where(clause = "deleted_at is NULL")
 public class LikeEntity {
     @Id
@@ -27,7 +27,6 @@ public class LikeEntity {
     @ManyToOne
     @JoinColumn(name = "post_id")
     private PostEntity post;
-
 
     @Column(name = "register_at")
     private Timestamp registerAt;

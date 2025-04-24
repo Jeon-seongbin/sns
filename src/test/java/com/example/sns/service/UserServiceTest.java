@@ -54,7 +54,6 @@ public class UserServiceTest {
         SnSApplicationException e = Assertions.assertThrows(SnSApplicationException.class, () -> userService.join(username, password));
     }
 
-
     @Test
     void login_user() {
         String username = "userName";
