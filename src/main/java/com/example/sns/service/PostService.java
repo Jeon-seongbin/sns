@@ -51,6 +51,8 @@ public class PostService {
         if (p.getUser() != user) {
             throw new SnSApplicationException(ErrorCode.INVALID_PERMISSION, String.format("user %s different", user.getId()));
         }
+        likeEntityRepository.deleteAllByPost(p);
+        commentEntityRepository.deleteAllByPost(p);
         postEntityRepository.delete(p);
     }
 
@@ -80,7 +82,7 @@ public class PostService {
 
     }
 
-    public int likeCount(Integer postId) {
+    public long likeCount(Integer postId) {
         PostEntity p = postEntityRepository.findById(postId).orElseThrow(() -> new SnSApplicationException(ErrorCode.POST_NOT_FOUND, String.format("post %s was not found", postId)));
         return likeEntityRepository.countByPost(p);
     }
