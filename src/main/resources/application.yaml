@@ -17,3 +17,5 @@ jwt:
   secret-key: "test-secret-test-secret-test-secret-test-secret-test-secret-test-secret-test-secret-test-secret-test-secret-test-secret-test-secret"
   token.expired-time-ms: 2582999
 
+
+#spring.redis.url:

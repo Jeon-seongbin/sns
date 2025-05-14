@@ -6,6 +6,7 @@ import com.example.sns.model.User;
 import com.example.sns.exception.SnSApplicationException;
 import com.example.sns.model.entity.UserEntity;
 import com.example.sns.repository.AlarmEntityRepository;
+import com.example.sns.repository.UserCacheRepository;
 import com.example.sns.repository.UserEntityRepository;
 import com.example.sns.util.JwtTokenUtils;
 import jakarta.transaction.Transactional;
@@ -23,6 +24,7 @@ public class UserService {
     private final UserEntityRepository userEntityRepository;
     private final AlarmEntityRepository alarmEntityRepository;
     private final BCryptPasswordEncoder encoder;
+    private final UserCacheRepository userCacheRepository;
 
     @Value("${jwt.secret-key}")
     private String secretKey;
@@ -33,11 +35,13 @@ public class UserService {
 
     public User loadUserByUserName(String userName) {
         return
-                userEntityRepository.findByUserName(userName).map(User::fromEntity).orElseThrow(
-                        () -> new SnSApplicationException(ErrorCode.USER_NOT_FOUND, String.format("userName is %s", userName))
+                userCacheRepository.getUser(userName).orElseGet(() ->
+                        userEntityRepository.findByUserName(userName).map(User::fromEntity).orElseThrow(
+                                () -> new SnSApplicationException(ErrorCode.USER_NOT_FOUND, String.format("userName is %s", userName))
+                        )
                 );
-    }
 
+    }
 
     @Transactional
     public User join(String username, String password) {
@@ -49,9 +53,10 @@ public class UserService {
     }
 
     public String login(String username, String password) {
-        UserEntity userEntity = userEntityRepository.findByUserName(username).orElseThrow(() -> new SnSApplicationException(ErrorCode.USER_NOT_FOUND, String.format("%s not founded username", username)));
+        User user = loadUserByUserName(username);
+        userCacheRepository.setUser(user);
 
-        if (!encoder.matches(password, userEntity.getPassword())) {
+        if (!encoder.matches(password, user.getPassword())) {
             throw new SnSApplicationException(ErrorCode.INVALID_PASSWORD);
         }
 

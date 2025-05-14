@@ -17,7 +17,7 @@ public class User implements UserDetails {
 
     private Integer id;
 
-    private String userName;
+    private String username;
 
     private String password;
 
@@ -29,7 +29,7 @@ public class User implements UserDetails {
 
     private Timestamp deleted_at;
 
-    public static User fromEntity(UserEntity userEntity){
+    public static User fromEntity(UserEntity userEntity) {
         return new User(
                 userEntity.getId(),
                 userEntity.getUserName(),
@@ -43,12 +43,6 @@ public class User implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return  List.of(new SimpleGrantedAuthority(this.getRole().toString()));
+        return List.of(new SimpleGrantedAuthority(this.getRole().toString()));
     }
-
-    @Override
-    public String getUsername() {
-        return this.userName;
-    }
-
 }

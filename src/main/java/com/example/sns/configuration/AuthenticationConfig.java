@@ -29,7 +29,10 @@ public class AuthenticationConfig {
     public WebSecurityCustomizer webSecurityCustomizer() {
         return (web) -> web.ignoring().requestMatchers(
                 new RegexRequestMatcher("^(?!/api/).*", "GET"),
-                new RegexRequestMatcher("^(?!/api/).*", "POST"));
+                new RegexRequestMatcher("^(?!/api/).*", "POST"),
+                new RegexRequestMatcher("/api/*/users/join", "POST"),
+                new RegexRequestMatcher("/api/*/users/login", "POST")
+        );
     }
 
     @Bean
